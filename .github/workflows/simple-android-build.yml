@@ -38,13 +38,12 @@ jobs:
       run: |
         echo "=== Building Android APK with EAS ==="
         echo "Project ID: $(npx expo config --get extra.eas.projectId)"
-        echo "Using EXPO_USERNAME: $EXPO_USERNAME"
+        echo "Using EXPO_TOKEN: ${{ secrets.EXPO_TOKEN != '' && '***' || 'Not set' }}"
         # Use --no-wait to get build logs immediately (--verbose flag not supported)
         eas build -p android --profile preview --non-interactive --no-wait
         echo "=== APK build started ==="
       env:
-        EXPO_USERNAME: ${{ secrets.EXPO_USERNAME }}
-        EXPO_PASSWORD: ${{ secrets.EXPO_PASSWORD }}
+        EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
     - name: Wait for build to complete
       run: |
@@ -59,8 +58,7 @@ jobs:
         eas build:download --platform android --latest
         echo "=== APK downloaded ==="
       env:
-        EXPO_USERNAME: ${{ secrets.EXPO_USERNAME }}
-        EXPO_PASSWORD: ${{ secrets.EXPO_PASSWORD }}
+        EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
     - name: Upload APK
       uses: actions/upload-artifact@v4

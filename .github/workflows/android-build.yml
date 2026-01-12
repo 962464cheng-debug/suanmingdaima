@@ -30,11 +30,12 @@ jobs:
     - name: Build Android APK
       run: eas build -p android --profile preview --non-interactive
       env:
-        EXPO_USERNAME: ${{ secrets.EXPO_USERNAME }}
-        EXPO_PASSWORD: ${{ secrets.EXPO_PASSWORD }}
+        EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
     - name: Download APK
       run: eas build:download --platform android --latest
+      env:
+        EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
     - name: Upload APK
       uses: actions/upload-artifact@v4

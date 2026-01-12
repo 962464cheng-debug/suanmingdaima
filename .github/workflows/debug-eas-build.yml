@@ -55,17 +55,15 @@ jobs:
       id: eas-build
       run: |
         echo "=== Starting EAS Build ==="
-        echo "Using EXPO_USERNAME: $EXPO_USERNAME"
-        echo "Using EXPO_PASSWORD: [REDACTED]"
+        echo "Using EXPO_TOKEN: ${{ secrets.EXPO_TOKEN != '' && '***' || 'Not set' }}"
         
-        # Run EAS build with detailed logs (--verbose flag not supported in this EAS CLI version)
+        # Run EAS build with EXPO_TOKEN for authentication
         eas build -p android --profile preview --non-interactive 2>&1 | tee eas-build.log
         
         echo "=== EAS Build completed ==="
         echo "eas build exit code: $?"
       env:
-        EXPO_USERNAME: ${{ secrets.EXPO_USERNAME }}
-        EXPO_PASSWORD: ${{ secrets.EXPO_PASSWORD }}
+        EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
     - name: Upload logs as artifacts
       if: always()
