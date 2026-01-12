@@ -27,10 +27,11 @@ jobs:
       run: pnpm add -g eas-cli
 
     - name: Login to Expo
-      run: eas login -u ${{ secrets.EXPO_USERNAME }} -p ${{ secrets.EXPO_PASSWORD }}
+      run: npx eas-cli login --username ${{ secrets.EXPO_USERNAME }} --password ${{ secrets.EXPO_PASSWORD }} --non-interactive
       env:
         EXPO_USERNAME: ${{ secrets.EXPO_USERNAME }}
         EXPO_PASSWORD: ${{ secrets.EXPO_PASSWORD }}
+      shell: bash
 
     - name: Build Android APK
       run: eas build -p android --profile preview --non-interactive
