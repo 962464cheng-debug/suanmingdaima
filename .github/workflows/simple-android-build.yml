@@ -23,14 +23,11 @@ jobs:
     - name: Install Expo CLI
       run: npm install -g expo-cli eas-cli
 
-    - name: Login to Expo
-      run: eas login -u ${{ secrets.EXPO_USERNAME }} -p ${{ secrets.EXPO_PASSWORD }} --non-interactive
+    - name: Build Android APK
+      run: eas build -p android --profile preview --non-interactive
       env:
         EXPO_USERNAME: ${{ secrets.EXPO_USERNAME }}
         EXPO_PASSWORD: ${{ secrets.EXPO_PASSWORD }}
-
-    - name: Build Android APK
-      run: eas build -p android --profile preview --non-interactive
 
     - name: Download APK
       run: eas build:download --platform android --latest
