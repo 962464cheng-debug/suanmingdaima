@@ -1,0 +1,58 @@
+name: Final Android APK Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: ''
+
+    - name: Install dependencies
+      run: |
+        echo "Installing dependencies..."
+        npm install --legacy-peer-deps --force
+        echo "Dependencies installed successfully!"
+
+    - name: Install EAS CLI
+      run: |
+        echo "Installing EAS CLI..."
+        npm install -g eas-cli
+        echo "EAS CLI installed successfully!"
+        echo "EAS version: $(eas --version)"
+
+    - name: Test EXPO_TOKEN authentication
+      run: |
+        echo "Testing EXPO_TOKEN authentication..."
+        eas whoami
+        echo "Authentication successful!"
+
+    - name: Build Android APK
+      run: |
+        echo "Starting Android APK build..."
+        eas build -p android --profile preview --non-interactive
+        echo "Build completed!"
+
+    - name: Download APK
+      run: |
+        echo "Downloading latest APK..."
+        eas build:download --platform android --latest
+        echo "APK downloaded successfully!"
+        ls -la *.apk
+
+    - name: Upload APK as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: android-apk
+        path: "*.apk"
+        retention-days: 30
