@@ -1,0 +1,48 @@
+name: Simple Dependency Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'yarn'
+
+    - name: Install yarn (if not available)
+      run: |
+        if ! command -v yarn &> /dev/null; then
+          echo "Installing yarn..."
+          npm install -g yarn
+        fi
+        echo "Yarn version: $(yarn --version)"
+
+    - name: Install dependencies with yarn
+      run: |
+        echo "=== Installing dependencies with yarn ==="
+        yarn install --legacy-peer-deps --force --verbose
+
+    - name: Install EAS CLI globally
+      run: |
+        echo "=== Installing EAS CLI ==="
+        yarn global add eas-cli
+        echo "EAS version: $(eas --version)"
+
+    - name: Test EAS CLI authentication
+      run: |
+        echo "=== Testing EAS CLI authentication ==="
+        eas whoami --token ${{ secrets.EXPO_TOKEN }}
+
+    - name: Build Android APK
+      run: |
+        echo "=== Building Android APK ==="
+        eas build -p android --profile preview --non-interactive --token ${{ secrets.EXPO_TOKEN }}
