@@ -18,11 +18,37 @@ jobs:
         node-version: '20'
         cache: ''
 
-    - name: Install dependencies
+    - name: Install dependencies with detailed logs
+      id: install-deps
       run: |
-        echo "Installing dependencies..."
-        npm install --legacy-peer-deps --force
-        echo "Dependencies installed successfully!"
+        echo "=== Installing dependencies ==="
+        echo "Node.js version: $(node -v)"
+        echo "npm version: $(npm -v)"
+        echo "Current directory: $(pwd)"
+        echo "Package.json exists: $(test -f package.json && echo "Yes" || echo "No")"
+        
+        if [ -f package.json ]; then
+          echo "=== Package.json contents (first 50 lines) ==="
+          head -50 package.json
+        fi
+        
+        echo "=== Running npm install ==="
+        npm install --legacy-peer-deps --force --verbose 2>&1 | tee npm-install.log
+        INSTALL_EXIT_CODE=$?
+        
+        echo "=== npm install completed with exit code: $INSTALL_EXIT_CODE ==="
+        echo "=== npm install log (last 100 lines) ==="
+        tail -100 npm-install.log
+        
+        if [ $INSTALL_EXIT_CODE -ne 0 ]; then
+          echo "=== npm install failed, showing full log ==="
+          cat npm-install.log
+          exit $INSTALL_EXIT_CODE
+        fi
+        
+        echo "=== Dependencies installed successfully ==="
+        echo "=== Installed packages (first 20) ==="
+        npm list --depth=0 | head -20
 
     - name: Install EAS CLI
       run: |
