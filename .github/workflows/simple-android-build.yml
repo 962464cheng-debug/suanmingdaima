@@ -32,7 +32,9 @@ jobs:
     - name: Build Android APK
       run: |
         echo "=== Building Android APK ==="
-        echo "EXPO_USERNAME: $EXPO_USERNAME"
+        echo "Using EXPO_USERNAME: $EXPO_USERNAME"
+        # EAS CLI no longer supports direct login with username/password
+        # Instead, we use EXPO_USERNAME and EXPO_PASSWORD environment variables directly
         eas build -p android --profile preview --non-interactive --verbose
         echo "=== APK build completed ==="
       env:
