@@ -1,0 +1,81 @@
+name: Debug EAS Android Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  debug-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: ''
+
+    - name: Show environment info
+      run: |
+        echo "Node.js version: $(node -v)"
+        echo "npm version: $(npm -v)"
+        echo "Current directory: $(pwd)"
+        echo "Files in directory: $(ls -la)"
+
+    - name: Install dependencies with verbose logging
+      run: |
+        echo "=== Installing dependencies ==="
+        npm install --legacy-peer-deps --force --verbose 2>&1 | tee npm-install.log
+        echo "=== Dependencies installed ==="
+        echo "npm install exit code: $?"
+
+    - name: Install EAS CLI globally
+      run: |
+        echo "=== Installing EAS CLI ==="
+        npm install -g eas-cli --verbose 2>&1 | tee eas-install.log
+        echo "=== EAS CLI installed ==="
+        echo "eas version: $(eas --version)"
+
+    - name: Show EAS project config
+      run: |
+        echo "=== EAS project config ==="
+        npx expo config --json 2>&1 | tee expo-config.log
+        echo "=== Project config shown ==="
+
+    - name: Show build profile
+      run: |
+        echo "=== Build profile ==="
+        cat eas.json 2>&1 | tee eas-json.log
+        echo "=== Build profile shown ==="
+
+    - name: Build Android APK with EAS CLI
+      id: eas-build
+      run: |
+        echo "=== Starting EAS Build ==="
+        echo "Using EXPO_USERNAME: $EXPO_USERNAME"
+        echo "Using EXPO_PASSWORD: [REDACTED]"
+        
+        # Run EAS build with maximum verbosity and capture all output
+        eas build -p android --profile preview --non-interactive --verbose 2>&1 | tee eas-build.log
+        
+        echo "=== EAS Build completed ==="
+        echo "eas build exit code: $?"
+      env:
+        EXPO_USERNAME: ${{ secrets.EXPO_USERNAME }}
+        EXPO_PASSWORD: ${{ secrets.EXPO_PASSWORD }}
+
+    - name: Upload logs as artifacts
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-logs
+        path: |
+          npm-install.log
+          eas-install.log
+          expo-config.log
+          eas-json.log
+          eas-build.log
+        retention-days: 14
