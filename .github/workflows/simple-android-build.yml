@@ -18,13 +18,23 @@ jobs:
         cache: ''
 
     - name: Install dependencies
-      run: npm install --legacy-peer-deps --force --verbose
+      run: |
+        echo "=== Installing dependencies ==="
+        npm install --legacy-peer-deps --force --verbose
+        echo "=== Dependencies installed ==="
 
     - name: Install Expo CLI
-      run: npm install -g expo-cli eas-cli
+      run: |
+        echo "=== Installing Expo CLI and EAS CLI ==="
+        npm install -g expo-cli eas-cli --verbose
+        echo "=== CLIs installed ==="
 
     - name: Build Android APK
-      run: eas build -p android --profile preview --non-interactive
+      run: |
+        echo "=== Building Android APK ==="
+        echo "EXPO_USERNAME: $EXPO_USERNAME"
+        eas build -p android --profile preview --non-interactive --verbose
+        echo "=== APK build completed ==="
       env:
         EXPO_USERNAME: ${{ secrets.EXPO_USERNAME }}
         EXPO_PASSWORD: ${{ secrets.EXPO_PASSWORD }}
