@@ -18,15 +18,14 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '20'
-        cache: 'yarn'
+        # Disable cache to avoid lock file requirement
+        cache: ''
 
     - name: Install dependencies
-      run: |
-        corepack enable
-        yarn install --verbose
+      run: npm install --legacy-peer-deps --force --verbose
 
     - name: Setup EAS CLI
-      run: yarn global add eas-cli
+      run: npm install -g eas-cli
 
     - name: Build Android APK
       run: eas build -p android --profile preview --non-interactive --verbose
