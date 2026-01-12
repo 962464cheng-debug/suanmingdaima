@@ -58,8 +58,8 @@ jobs:
         echo "Using EXPO_USERNAME: $EXPO_USERNAME"
         echo "Using EXPO_PASSWORD: [REDACTED]"
         
-        # Run EAS build with maximum verbosity and capture all output
-        eas build -p android --profile preview --non-interactive --verbose 2>&1 | tee eas-build.log
+        # Run EAS build with detailed logs (--verbose flag not supported in this EAS CLI version)
+        eas build -p android --profile preview --non-interactive 2>&1 | tee eas-build.log
         
         echo "=== EAS Build completed ==="
         echo "eas build exit code: $?"
