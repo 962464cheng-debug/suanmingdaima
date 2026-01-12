@@ -55,9 +55,9 @@ jobs:
       id: eas-build
       run: |
         echo "=== Starting EAS Build ==="
-        echo "Using EXPO_TOKEN: ${{ secrets.EXPO_TOKEN != '' && '***' || 'Not set' }}"
+        echo "Using EXPO_TOKEN: $EXPO_TOKEN"
         
-        # Run EAS build with EXPO_TOKEN for authentication
+        # Run EAS build with detailed logs (--verbose flag not supported in this EAS CLI version)
         eas build -p android --profile preview --non-interactive 2>&1 | tee eas-build.log
         
         echo "=== EAS Build completed ==="

@@ -28,12 +28,20 @@ jobs:
       run: npm install -g eas-cli
 
     - name: Build Android APK
-      run: eas build -p android --profile preview --non-interactive
+      run: |
+        echo "Starting Android APK build..."
+        echo "Using EXPO_TOKEN: $EXPO_TOKEN"
+        eas build -p android --profile preview --non-interactive
+        echo "Build completed!"
       env:
         EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
     - name: Download APK
-      run: eas build:download --platform android --latest
+      run: |
+        echo "Downloading latest APK..."
+        echo "Using EXPO_TOKEN: $EXPO_TOKEN"
+        eas build:download --platform android --latest
+        echo "APK downloaded successfully!"
       env:
         EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 

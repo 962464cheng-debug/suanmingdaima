@@ -38,7 +38,7 @@ jobs:
       run: |
         echo "=== Building Android APK with EAS ==="
         echo "Project ID: $(npx expo config --get extra.eas.projectId)"
-        echo "Using EXPO_TOKEN: ${{ secrets.EXPO_TOKEN != '' && '***' || 'Not set' }}"
+        echo "Using EXPO_TOKEN: $EXPO_TOKEN"
         # Use --no-wait to get build logs immediately (--verbose flag not supported)
         eas build -p android --profile preview --non-interactive --no-wait
         echo "=== APK build started ==="
@@ -55,6 +55,7 @@ jobs:
     - name: Download latest APK
       run: |
         echo "=== Downloading latest APK ==="
+        echo "Using EXPO_TOKEN: $EXPO_TOKEN"
         eas build:download --platform android --latest
         echo "=== APK downloaded ==="
       env:
