@@ -10,39 +10,57 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Install Node.js
+    - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '20'
-        # Disable cache to avoid lock file requirement
-        cache: ''
+        cache: 'npm'
 
     - name: Install dependencies
       run: |
         echo "=== Installing dependencies ==="
-        npm install --legacy-peer-deps --force --verbose
+        npm install --legacy-peer-deps --force
         echo "=== Dependencies installed ==="
 
-    - name: Install Expo CLI
+    - name: Update Expo CLI and EAS CLI
       run: |
-        echo "=== Installing Expo CLI and EAS CLI ==="
-        npm install -g expo-cli eas-cli --verbose
-        echo "=== CLIs installed ==="
+        echo "=== Updating Expo CLI and EAS CLI ==="
+        npm install -g expo-cli@latest eas-cli@latest
+        echo "=== CLIs updated ==="
 
-    - name: Build Android APK
+    - name: Check project configuration
       run: |
-        echo "=== Building Android APK ==="
+        echo "=== Checking project configuration ==="
+        npx expo doctor
+        echo "=== Project configuration checked ==="
+
+    - name: Build Android APK with EAS
+      run: |
+        echo "=== Building Android APK with EAS ==="
+        echo "Project ID: $(npx expo config --get extra.eas.projectId)"
         echo "Using EXPO_USERNAME: $EXPO_USERNAME"
-        # EAS CLI no longer supports direct login with username/password
-        # Instead, we use EXPO_USERNAME and EXPO_PASSWORD environment variables directly
-        eas build -p android --profile preview --non-interactive --verbose
-        echo "=== APK build completed ==="
+        # Use --no-wait to get build logs immediately
+        eas build -p android --profile preview --non-interactive --verbose --no-wait
+        echo "=== APK build started ==="
       env:
         EXPO_USERNAME: ${{ secrets.EXPO_USERNAME }}
         EXPO_PASSWORD: ${{ secrets.EXPO_PASSWORD }}
 
-    - name: Download APK
-      run: eas build:download --platform android --latest
+    - name: Wait for build to complete
+      run: |
+        echo "=== Waiting for build to complete ==="
+        # Wait for 5 minutes for the build to complete
+        sleep 300
+        echo "=== Build waiting completed ==="
+
+    - name: Download latest APK
+      run: |
+        echo "=== Downloading latest APK ==="
+        eas build:download --platform android --latest
+        echo "=== APK downloaded ==="
+      env:
+        EXPO_USERNAME: ${{ secrets.EXPO_USERNAME }}
+        EXPO_PASSWORD: ${{ secrets.EXPO_PASSWORD }}
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
