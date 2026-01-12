@@ -18,13 +18,13 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '20'
-        cache: 'pnpm'
+        cache: 'npm'
 
     - name: Install dependencies
-      run: pnpm install
+      run: npm install
 
     - name: Setup EAS CLI
-      run: pnpm add -g eas-cli
+      run: npm install -g eas-cli
 
     - name: Login to Expo
       run: npx eas-cli login --username ${{ secrets.EXPO_USERNAME }} --password ${{ secrets.EXPO_PASSWORD }} --non-interactive
