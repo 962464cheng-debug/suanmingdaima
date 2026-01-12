@@ -31,32 +31,26 @@ jobs:
         echo "EAS CLI installed successfully!"
         echo "EAS version: $(eas --version)"
 
-    - name: Test EXPO_TOKEN authentication
+    - name: Test EXPO_TOKEN authentication with --token parameter
       run: |
-        echo "Testing EXPO_TOKEN authentication..."
-        eas whoami
+        echo "Testing EXPO_TOKEN authentication with --token parameter..."
+        eas whoami --token ${{ secrets.EXPO_TOKEN }}
         echo "Authentication successful!"
-      env:
-        EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
-    - name: Build Android APK
+    - name: Build Android APK with --token parameter
       run: |
         echo "Starting Android APK build..."
-        echo "Using EXPO_TOKEN: $EXPO_TOKEN"
-        eas build -p android --profile preview --non-interactive
+        echo "Using EXPO_TOKEN with --token parameter"
+        eas build -p android --profile preview --non-interactive --token ${{ secrets.EXPO_TOKEN }}
         echo "Build completed!"
-      env:
-        EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
-    - name: Download APK
+    - name: Download APK with --token parameter
       run: |
         echo "Downloading latest APK..."
-        echo "Using EXPO_TOKEN: $EXPO_TOKEN"
-        eas build:download --platform android --latest
+        echo "Using EXPO_TOKEN with --token parameter"
+        eas build:download --platform android --latest --token ${{ secrets.EXPO_TOKEN }}
         echo "APK downloaded successfully!"
         ls -la *.apk
-      env:
-        EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
     - name: Upload APK as artifact
       uses: actions/upload-artifact@v4
