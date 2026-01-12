@@ -1,0 +1,72 @@
+name: Debug Android APK Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      EXPO_DEBUG: true
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Show repository information
+      run: |
+        echo "Repository: $GITHUB_REPOSITORY"
+        echo "Branch: $GITHUB_REF_NAME"
+        echo "Commit: $GITHUB_SHA"
+        ls -la
+
+    - name: Install Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: ''
+
+    - name: Show Node.js version
+      run: |
+        node --version
+        npm --version
+
+    - name: Install dependencies with verbose log
+      run: npm install --verbose
+
+    - name: Install EAS CLI
+      run: npm install -g eas-cli
+
+    - name: Show EAS CLI version
+      run: eas --version
+
+    - name: Expo login debug
+      run: |
+        echo "Attempting to login to Expo..."
+        eas login -u ${{ secrets.EXPO_USERNAME }} -p ${{ secrets.EXPO_PASSWORD }} --non-interactive --verbose
+      env:
+        EXPO_USERNAME: ${{ secrets.EXPO_USERNAME }}
+        EXPO_PASSWORD: ${{ secrets.EXPO_PASSWORD }}
+      continue-on-error: true
+
+    - name: Build Android APK with debug
+      run: |
+        echo "Starting Android build..."
+        eas build -p android --profile preview --non-interactive --verbose
+      env:
+        EXPO_USERNAME: ${{ secrets.EXPO_USERNAME }}
+        EXPO_PASSWORD: ${{ secrets.EXPO_PASSWORD }}
+
+    - name: Download APK
+      run: |
+        echo "Downloading APK..."
+        eas build:download --platform android --latest --verbose
+      continue-on-error: true
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: android-apk-debug
+        path: "*.apk"
+        retention-days: 30
