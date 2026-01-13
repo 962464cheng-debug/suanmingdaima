@@ -4,7 +4,6 @@
       "android": {
         "buildType": "apk",
         "gradleCommand": ":app:assembleRelease",
-        "gradleDistributionUrl": "https://services.gradle.org/distributions/gradle-8.14.3-bin.zip",
         "image": "ubuntu-22.04-jdk-17"
       }
     },
@@ -12,7 +11,6 @@
       "android": {
         "buildType": "app-bundle",
         "gradleCommand": ":app:bundleRelease",
-        "gradleDistributionUrl": "https://services.gradle.org/distributions/gradle-8.14.3-bin.zip",
         "image": "ubuntu-22.04-jdk-17"
       }
     }
