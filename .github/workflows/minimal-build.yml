@@ -1,0 +1,66 @@
+name: Minimal Android Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    
+    steps:
+    # Step 1: Checkout repository
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    # Step 2: Set up Node.js with clean environment
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: ''
+      
+    # Step 3: Clean up any existing files that might cause conflicts
+    - name: Clean up environment
+      run: |
+        echo "Cleaning up environment..."
+        rm -rf node_modules package-lock.json yarn.lock pnpm-lock.yaml
+        echo "Environment cleaned."
+    
+    # Step 4: Install EAS CLI only (skip local dependencies)
+    - name: Install EAS CLI globally
+      run: |
+        echo "Installing EAS CLI..."
+        npm install -g eas-cli
+        echo "EAS CLI version: $(eas --version)"
+    
+    # Step 5: Test EXPO_TOKEN authentication
+    - name: Test EXPO_TOKEN
+      run: |
+        echo "Testing EXPO_TOKEN..."
+        eas whoami --token ${{ secrets.EXPO_TOKEN }}
+        echo "EXPO_TOKEN is valid."
+    
+    # Step 6: Build Android APK using EAS remote build
+    - name: Build Android APK with EAS remote
+      run: |
+        echo "Starting EAS remote build..."
+        # Use --remote flag to build on EAS servers
+        eas build -p android --profile preview --non-interactive --remote --token ${{ secrets.EXPO_TOKEN }}
+        echo "EAS build completed."
+    
+    # Step 7: Download the built APK
+    - name: Download built APK
+      run: |
+        echo "Downloading built APK..."
+        eas build:download --platform android --latest --token ${{ secrets.EXPO_TOKEN }}
+        echo "APK downloaded."
+        ls -la *.apk
+    
+    # Step 8: Upload APK as artifact
+    - name: Upload APK artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: android-apk
+        path: "*.apk"
+        retention-days: 30
