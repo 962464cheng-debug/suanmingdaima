@@ -4,14 +4,14 @@
       "android": {
         "buildType": "apk",
         "gradleCommand": ":app:assembleRelease",
-        "image": "ubuntu-22.04-jdk-17"
+        "image": "sdk-54"
       }
     },
     "production": {
       "android": {
         "buildType": "app-bundle",
         "gradleCommand": ":app:bundleRelease",
-        "image": "ubuntu-22.04-jdk-17"
+        "image": "sdk-54"
       }
     }
   }
