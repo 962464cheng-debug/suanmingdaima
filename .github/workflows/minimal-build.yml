@@ -41,12 +41,12 @@ jobs:
         eas whoami --token ${{ secrets.EXPO_TOKEN }}
         echo "EXPO_TOKEN is valid."
     
-    # Step 6: Build Android APK using EAS remote build
-    - name: Build Android APK with EAS remote
+    # Step 6: Build Android APK using EAS
+    - name: Build Android APK with EAS
       run: |
-        echo "Starting EAS remote build..."
-        # Use --remote flag to build on EAS servers
-        eas build -p android --profile preview --non-interactive --remote --token ${{ secrets.EXPO_TOKEN }}
+        echo "Starting EAS build..."
+        # EAS CLI defaults to remote build on EAS servers
+        eas build -p android --profile preview --non-interactive --token ${{ secrets.EXPO_TOKEN }}
         echo "EAS build completed."
     
     # Step 7: Download the built APK
