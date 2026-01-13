@@ -1,0 +1,29 @@
+{
+  "name": "admin-assistant",
+  "version": "1.0.0",
+  "private": true,
+  "main": "expo-router/entry",
+  "scripts": {
+    "android": "expo run:android"
+  },
+  "dependencies": {
+    "expo": "~54.0.29",
+    "expo-router": "~6.0.19",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-native": "0.81.5",
+    "react-native-web": "~0.21.2",
+    "@expo/vector-icons": "^15.0.3",
+    "react-native-screens": "~3.29.0",
+    "react-native-safe-area-context": "~4.8.2",
+    "react-native-gesture-handler": "~2.28.0",
+    "react-native-reanimated": "~3.6.0",
+    "react-native-svg": "15.12.1"
+  },
+  "devDependencies": {
+    "@types/react": "~19.1.17",
+    "typescript": "~5.9.3",
+    "eas-cli": "^16.28.0"
+  },
+  "packageManager": "npm@10.0.0"
+}

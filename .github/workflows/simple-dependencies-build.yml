@@ -1,0 +1,82 @@
+name: Simple Dependencies Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    
+    steps:
+    # Step 1: Checkout repository
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    # Step 2: Set up Node.js
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: ''
+    
+    # Step 3: Use simplified package.json for EAS build
+    - name: Use simplified package.json
+      run: |
+        echo "=== Using simplified package.json for EAS build ==="
+        mv package.json original-package.json
+        cp eas-package.json package.json
+        echo "=== package.json replaced with simplified version ==="
+        cat package.json
+    
+    # Step 4: Install EAS CLI
+    - name: Install EAS CLI
+      run: |
+        echo "=== Installing EAS CLI ==="
+        npm install -g eas-cli
+        echo "EAS CLI version: $(eas --version)"
+    
+    # Step 5: Install dependencies with simplified package.json
+    - name: Install dependencies
+      run: |
+        echo "=== Installing dependencies ==="
+        npm install --legacy-peer-deps --force --verbose
+        echo "=== Dependencies installed ==="
+    
+    # Step 6: Test EXPO_TOKEN
+    - name: Test EXPO_TOKEN
+      run: |
+        echo "=== Testing EXPO_TOKEN ==="
+        eas whoami --token ${{ secrets.EXPO_TOKEN }}
+        echo "EXPO_TOKEN is valid."
+    
+    # Step 7: Build Android APK
+    - name: Build Android APK
+      run: |
+        echo "=== Building Android APK ==="
+        eas build -p android --profile preview --non-interactive --token ${{ secrets.EXPO_TOKEN }}
+        echo "=== EAS build completed ==="
+    
+    # Step 8: Download built APK
+    - name: Download built APK
+      run: |
+        echo "=== Downloading built APK ==="
+        eas build:download --platform android --latest --token ${{ secrets.EXPO_TOKEN }}
+        echo "=== APK downloaded ==="
+        ls -la *.apk
+    
+    # Step 9: Upload APK artifact
+    - name: Upload APK artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: android-apk
+        path: "*.apk"
+        retention-days: 30
+    
+    # Step 10: Restore original package.json
+    - name: Restore original package.json
+      if: always()
+      run: |
+        echo "=== Restoring original package.json ==="
+        mv original-package.json package.json
+        echo "=== Original package.json restored ==="
