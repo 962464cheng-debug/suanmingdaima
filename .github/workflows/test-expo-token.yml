@@ -1,0 +1,56 @@
+name: Test EXPO_TOKEN
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-token:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+    # Step 1: Set up Node.js
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: ''
+    
+    # Step 2: Install EAS CLI
+    - name: Install EAS CLI
+      run: |
+        echo "=== Installing EAS CLI ==="
+        npm install -g eas-cli
+        echo "EAS CLI version: $(eas --version)"
+    
+    # Step 3: Test EXPO_TOKEN with whoami command
+    - name: Test EXPO_TOKEN with eas whoami
+      run: |
+        echo "=== Testing EXPO_TOKEN with eas whoami ==="
+        eas whoami --token ${{ secrets.EXPO_TOKEN }}
+        echo "✅ eas whoami succeeded!"
+    
+    # Step 4: Test EXPO_TOKEN with build:list command
+    - name: Test EXPO_TOKEN with eas build:list
+      run: |
+        echo "=== Testing EXPO_TOKEN with eas build:list ==="
+        eas build:list --platform android --limit 3 --token ${{ secrets.EXPO_TOKEN }}
+        echo "✅ eas build:list succeeded!"
+    
+    # Step 5: Test project configuration
+    - name: Checkout repository and test config
+      uses: actions/checkout@v4
+      
+    - name: Test project configuration
+      run: |
+        echo "=== Testing project configuration ==="
+        eas config --token ${{ secrets.EXPO_TOKEN }}
+        echo "✅ eas config succeeded!"
+    
+    # Step 6: Summary
+    - name: Summary
+      run: |
+        echo "=== All tests completed! ==="
+        echo "✅ EXPO_TOKEN is valid"
+        echo "✅ EAS CLI is working correctly"
+        echo "✅ Project configuration is valid"
